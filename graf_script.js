@@ -48,6 +48,7 @@
 		//}
 		//getCoord(x,"x_value");
 
+
 		function getCoords() {
 			var coord_x = document.getElementById("x_value").value;
 			var coord_y = document.getElementById("y_value").value;
@@ -59,14 +60,16 @@
 
 			console.log(x,y,z);
 
-			alert("o grafico sera plotado a artir das seguintes posicoes:");
-			alert(coord_x);
-			alert(coord_y);
-			alert(coord_z);
+			filterdata = []
+			for(key in dataset){
+				add(dataset[key]);
+			}
+			options.series[0].data = filterdata;
 
+			var chart = new Highcharts.Chart(options);
+			rotation();
 
 		}
-		getCoords();
 
 
 		// configuracoes do grafico ==================================================================
@@ -160,32 +163,36 @@
 		//===========================================================================================
 
 		// evento do mouse para rotacao =============================================================
-		$(chart.container).on('mousedown.hc touchstart.hc', function (eStart) {
+		function rotation(){
 
-		    eStart = chart.pointer.normalize(eStart);
+			$(chart.container).on('mousedown.hc touchstart.hc', function (eStart) {
 
-		    var posX = eStart.pageX,
-		        posY = eStart.pageY,
-		        alpha = chart.options.chart.options3d.alpha,
-		        beta = chart.options.chart.options3d.beta,
-		        newAlpha,
-		        newBeta,
-		        sensitivity = 5; // quanto menor - mais sensivel
+			    eStart = chart.pointer.normalize(eStart);
 
-		    $(document).on({
-		        'mousemove.hc touchdrag.hc': function (e) {
-		            // Run beta
-		            newBeta = beta + (posX - e.pageX) / sensitivity;
-		            chart.options.chart.options3d.beta = newBeta;
+			    var posX = eStart.pageX,
+			        posY = eStart.pageY,
+			        alpha = chart.options.chart.options3d.alpha,
+			        beta = chart.options.chart.options3d.beta,
+			        newAlpha,
+			        newBeta,
+			        sensitivity = 5; // quanto menor - mais sensivel
 
-		            // Run alpha
-		            newAlpha = alpha + (e.pageY - posY) / sensitivity;
-		            chart.options.chart.options3d.alpha = newAlpha;
+			    $(document).on({
+			        'mousemove.hc touchdrag.hc': function (e) {
+			            // Run beta
+			            newBeta = beta + (posX - e.pageX) / sensitivity;
+			            chart.options.chart.options3d.beta = newBeta;
 
-		            chart.redraw(false);
-		        },
-		        'mouseup touchend': function () {
-		            $(document).off('.hc');
-		        }
-		    });
-		});
+			            // Run alpha
+			            newAlpha = alpha + (e.pageY - posY) / sensitivity;
+			            chart.options.chart.options3d.alpha = newAlpha;
+
+			            chart.redraw(false);
+			        },
+			        'mouseup touchend': function () {
+			            $(document).off('.hc');
+			        }
+			    });
+			});
+		}
+		rotation();
